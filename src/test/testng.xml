@@ -1,0 +1,7 @@
+<suite name ="TestSuite" parallel="methods" thread-count ="5">
+    <test name="Tests">
+        <classes>
+            <class name="Lecture10.Calculator"/>
+        </classes>
+    </test>
+</suite>
