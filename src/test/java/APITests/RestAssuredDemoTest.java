@@ -246,8 +246,30 @@ public class RestAssuredDemoTest {
         int statusCode = response.statusCode();
         Assert.assertEquals(statusCode, HttpStatus.SC_OK);
         Assert.assertEquals(response.jsonPath().get("postStatus").toString(), "[public]");
-
     }
 
+    @Test(dependsOnGroups = "signup", dependsOnMethods = {"testListUserPublicPosts", "testCreatePublicPost"})
+    public void testDeleteUserPost() {
+        String postId = "postId";
 
+        Response response = given()
+                .log()
+                .all()
+                .pathParam("postId", postId)
+                .queryParam("postId", postId)
+                .header("Authorization", accessToken)
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/posts/{postId}")
+                .then().log().all()
+                .extract()
+                .response();
+
+        int statusCode = response.statusCode();
+       Assert.assertEquals(statusCode, HttpStatus.SC_OK);
+
+
+
+
+    }
 }
