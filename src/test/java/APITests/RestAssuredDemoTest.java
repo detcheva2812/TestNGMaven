@@ -221,5 +221,26 @@ public class RestAssuredDemoTest {
         Assert.assertEquals(response.jsonPath().get("user.username"), username);
     }
 
+    @Test(dependsOnGroups = "signup", dependsOnMethods = "testCreatePublicPost")
+    public void testListUserPublicPosts() {
+
+        Response response = given()
+                .log()
+                .all()
+                .pathParam("userId",userId)
+                .header("Authorization", accessToken)
+                .when()
+                .get("/users/{userId}/posts")
+                .then().log().all()
+                .extract()
+                .response();
+
+        int statusCode = response.statusCode();
+        Assert.assertEquals(statusCode, HttpStatus.SC_OK);
+
+    }
+
+
+
 
 }
