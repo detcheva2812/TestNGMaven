@@ -223,11 +223,18 @@ public class RestAssuredDemoTest {
 
     @Test(dependsOnGroups = "signup", dependsOnMethods = "testCreatePublicPost")
     public void testListUserPublicPosts() {
+        int numberOfPosts = 1;
+        int numberOfSkippedPosts = 0;
+        String postStatus = "public";
 
         Response response = given()
                 .log()
                 .all()
-                .pathParam("userId",userId)
+                .pathParam("userId", userId)
+                .queryParam("take", numberOfPosts)
+                .queryParam("skip", numberOfSkippedPosts)
+                .queryParam("postStatus", postStatus)
+                .queryParam("userId", userId)
                 .header("Authorization", accessToken)
                 .when()
                 .get("/users/{userId}/posts")
@@ -237,10 +244,9 @@ public class RestAssuredDemoTest {
 
         int statusCode = response.statusCode();
         Assert.assertEquals(statusCode, HttpStatus.SC_OK);
+        Assert.assertEquals(response.jsonPath().get("postStatus").toString(), "[public]");
 
     }
-
-
 
 
 }
