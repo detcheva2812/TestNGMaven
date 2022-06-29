@@ -242,6 +242,7 @@ public class RestAssuredDemoTest {
                 .extract()
                 .response();
 
+
         int statusCode = response.statusCode();
         Assert.assertEquals(statusCode, HttpStatus.SC_OK);
         Assert.assertEquals(response.jsonPath().get("postStatus").toString(), "[public]");
