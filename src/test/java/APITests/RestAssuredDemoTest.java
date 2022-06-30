@@ -261,7 +261,6 @@ public class RestAssuredDemoTest {
                 .log()
                 .all()
                 .pathParam("postId", postId)
-                .queryParam("postId", postId)
                 .header("Authorization", accessToken)
                 .contentType(ContentType.JSON)
                 .when()
