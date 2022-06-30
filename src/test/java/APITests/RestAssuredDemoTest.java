@@ -24,6 +24,7 @@ public class RestAssuredDemoTest {
     String username;
     SecureRandom random;
     int userId;
+    int postId;
 
     @BeforeTest
     public void setUp() {
@@ -180,6 +181,7 @@ public class RestAssuredDemoTest {
                 .extract()
                 .response();
 
+
         int statusCode = response.statusCode();
         Assert.assertEquals(statusCode, HttpStatus.SC_CREATED);
         Assert.assertNotNull(response.jsonPath().get("id"));
@@ -187,6 +189,8 @@ public class RestAssuredDemoTest {
         Assert.assertEquals(response.jsonPath().get("coverUrl"), coverUrl);
         Assert.assertEquals(response.jsonPath().get("caption"), caption);
         Assert.assertEquals(response.jsonPath().get("user.username"), username);
+        postId = response.jsonPath().get("id");
+        Assert.assertTrue(postId != 0);
     }
 
     @Test(dependsOnGroups = "signup")
@@ -250,7 +254,8 @@ public class RestAssuredDemoTest {
 
     @Test(dependsOnGroups = "signup", dependsOnMethods = {"testListUserPublicPosts", "testCreatePublicPost"})
     public void testDeleteUserPost() {
-        String postId = "postId";
+
+       String msg = "Post was deleted!";
 
         Response response = given()
                 .log()
@@ -265,11 +270,9 @@ public class RestAssuredDemoTest {
                 .extract()
                 .response();
 
+
         int statusCode = response.statusCode();
-       Assert.assertEquals(statusCode, HttpStatus.SC_OK);
-
-
-
-
+        Assert.assertEquals(statusCode, HttpStatus.SC_OK);
+        Assert.assertEquals(response.jsonPath().get("msg").toString(), msg );
     }
 }
