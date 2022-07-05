@@ -46,6 +46,32 @@ XPath:
 
 Profile page
 
+Skillо logo:
+CSS:
+#homeIcon
+XPath:
+//img[@id='homeIcon']
+
+Home button:
+CSS:
+#nav-link-home
+XPath:
+//a[@id='nav-link-home']
+
+Profile button
+CSS:
+#nav-link-profile
+XPath:
+//a[contains(text(),'Profile')]
+//a[@id='nav-link-profile']
+
+New post button
+CSS:
+#nav-link-new-post
+XPath:
+//a[@id='nav-link-new-post']
+//a[contains(text(),'New post')]
+
 edit button
 //i[@class='fas fa-user-edit ng-star-inserted']
 
