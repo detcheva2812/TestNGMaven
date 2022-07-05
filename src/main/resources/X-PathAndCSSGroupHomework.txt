@@ -81,7 +81,7 @@ edit image
 edit image hovered
 //i[@class='fas fa-camera']
 
-profile posts couter
+profile posts counter
 //strong[@class='profile-stat-count']
 
 user name
