@@ -1,0 +1,142 @@
+Search bar:
+
+CSS:
+  #search-bar
+  form input
+  form>input
+  .form-control.mr-sm-2.ng-pristine.ng-valid.ng-touched
+
+XPath:
+  //input[@placeholder='Search']
+  //input[@class='form-control mr-sm-2 ng-pristine ng-valid ng-touched']
+  //input[@formcontrolname='query']
+
+Magnifier:
+
+  CSS:
+   form i
+   form>i
+   .fas.fa-search
+
+XPath:
+  //i[@class='fas fa-search']
+
+Form - Search bar + magnifier:
+
+CSS
+  .search-container.form-inline.my-2.my-lg-0.ng-pristine.ng-valid.ng-star-inserted.ng-touched
+
+XPath
+  //form
+  //form[@class='search-container form-inline my-2 my-lg-0 ng-pristine ng-valid ng-star-inserted ng-touched']
+
+------------------------------
+
+Logout button:
+
+  CSS:
+   li i
+   .fas.fa-sign-out-alt.fa-lg
+
+XPath:
+   //*[@class='fas fa-sign-out-alt fa-lg']
+   //i[@class='fas fa-sign-out-alt fa-lg']
+
+------------------------------
+
+Profile page
+
+Skillо logo:
+CSS:
+#homeIcon
+XPath:
+//img[@id='homeIcon']
+
+Home button:
+CSS:
+#nav-link-home
+XPath:
+//a[@id='nav-link-home']
+
+Profile button
+CSS:
+#nav-link-profile
+XPath:
+//a[contains(text(),'Profile')]
+//a[@id='nav-link-profile']
+
+New post button
+CSS:
+#nav-link-new-post
+XPath:
+//a[@id='nav-link-new-post']
+//a[contains(text(),'New post')]
+
+edit button
+//i[@class='fas fa-user-edit ng-star-inserted']
+
+edit image
+//div[@class='edit-profile-pic ng-star-inserted']
+
+edit image hovered
+//i[@class='fas fa-camera']
+
+profile posts counter
+//strong[@class='profile-stat-count']
+
+user name
+//h2
+//h2[contains(text(),'test01234')]
+
+profile followers counter
+//li[@id="followers"]/strong
+
+profile following counter
+//li[@id="following"]/strong
+
+new post
+//i[@class='far fa-plus-square fa-3x']
+
+public posts button
+//label[@class='btn-public btn btn-primary']
+
+private posts button
+//label[@class='btn-private btn btn-primary']
+
+all posts button
+//label[@class='btn-all btn btn-primary']
+
+Modify Profile pop up (Username field):
+//input[@formcontrolname='username']
+
+Modify Profile pop up (email field):
+//input[@formcontrolname='email']
+
+Modify Profiile pop up (password field):
+//input[@formcontrolname='password']
+
+Modify Profile pop up (Confirm password field):
+//input[@formcontrolname='confirmPassword']
+
+Modify Profile pop up (Public info field):
+//textarea[@formcontrolname='publicInfo']
+
+Modify Profile pop up (Save button):
+//button[@class='btn btn-primary']
+
+Following/Followers modal (Unfollow button)
+//button[@class='btn btn-primary ng-star-inserted']
+
+Following/Followers modal (name of the person you are following or you are a follower of)
+//a[@class='post-user']
+
+Following/Followers modal image of follower/person you are following
+//app-followers-modal//img
+
+
+
+
+
+
+
+
