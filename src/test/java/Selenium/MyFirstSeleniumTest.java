@@ -12,7 +12,9 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -93,21 +95,22 @@ public class MyFirstSeleniumTest {
     }
 
     @Test
-    public void testMobileSearch(){
+    public void testMobileSearchByMarkaAndModel() {
         String carMarka = "Seat";
+
         String carModel = "Ibiza";
 
-      driver.get("https://www.mobile.bg/pcgi/mobile.cgi");
+        driver.get("https://www.mobile.bg/pcgi/mobile.cgi");
 
-      By markaBy = By.xpath("//select[@name='marka']");
-      By modelBy = By.xpath("//select[@name='model']");
-      By searchby = By.xpath("//input[@name='button2']");
-      By toSiteBy = By.xpath("//p[text()='Към сайта']");
+        By markaBy = By.xpath("//select[@name='marka']");
+        By modelBy = By.xpath("//select[@name='model']");
+        By searchby = By.xpath("//input[@name='button2']");
+        By toSiteBy = By.xpath("//p[text()='Към сайта']");
 
-      driver.findElement(toSiteBy).click();
+        driver.findElement(toSiteBy).click();
 
-      Select markaDropdown = new Select(driver.findElement(markaBy));
-      markaDropdown.selectByVisibleText(carMarka);
+        Select markaDropdown = new Select(driver.findElement(markaBy));
+        markaDropdown.selectByVisibleText(carMarka);
 
         Select modelDropdown = new Select(driver.findElement(modelBy));
         modelDropdown.selectByVisibleText(carModel);
@@ -117,10 +120,90 @@ public class MyFirstSeleniumTest {
 
         List<WebElement> listAdv = driver.findElements(By.xpath("//form[@name='search']//a[@class='mmm']"));
 
-        listAdv.forEach(add -> {
-            Assert.assertTrue(add.getText().contains(carMarka + " " + carModel));
+        listAdv.forEach(adv -> {
+            Assert.assertTrue(adv.getText().contains(carMarka + " " + carModel));
         });
+    }
+
+    @Test
+    public void testMobileSearchByRegion() {
+        String region = "София";
+        String populatedPlace = "гр. София";
+
+        driver.get("https://www.mobile.bg/pcgi/mobile.cgi");
+
+        By regionBy = By.xpath("//select[@name='location']");
+        By populatedPlaceBy = By.xpath("//select[@name='locationc']");
+        By searchBy = By.xpath("//input[@name='button2']");
+        By toSiteBy = By.xpath("//p[text()='Към сайта']");
+
+        driver.findElement(toSiteBy).click();
+
+        Select regionDropdown = new Select(driver.findElement(regionBy));
+        regionDropdown.selectByVisibleText(region);
+
+        Select populatedPlaceDropdown = new Select(driver.findElement(populatedPlaceBy));
+        populatedPlaceDropdown.selectByVisibleText(populatedPlace);
+
+        driver.findElement(searchBy).click();
+
+        List<WebElement> listAdv = driver.findElements(By.xpath("//td[@style='width:334px;height:50px;padding-left:4px']"));
+
+        listAdv.forEach(adv -> {
+            Assert.assertTrue(adv.getText().contains("Регион: " + region + ", " + populatedPlace));
+        });
+
+    }
+
+    @Test(invocationCount = 100)
+    public void testMobileSortByPrice() {
+
+        String sortByPrice = "Цена";
+
+        driver.get("https://www.mobile.bg/pcgi/mobile.cgi");
+
+        By sortByPriceBy = By.xpath("//select[@class='sw300 selectHeight24']");
+        By searchBy = By.xpath("//input[@name='button2']");
+        By toSiteBy = By.xpath("//p[text()='Към сайта']");
+
+        driver.findElement(toSiteBy).click();
+
+        Select priceDropdown = new Select(driver.findElement(sortByPriceBy));
+        priceDropdown.selectByVisibleText(sortByPrice);
+
+        wait.until(ExpectedConditions.visibilityOf(driver.findElement(searchBy)));
+        driver.findElement(searchBy).click();
+
+        List<WebElement> listAdv = driver.findElements(By.xpath("//span[@class='price']"));
+        List<String> listTextAdv = new ArrayList<>();
+        List<Integer> listPriceInt = new ArrayList<>();
+
+        for (WebElement el : listAdv) {
+            String text = el.getText();
+            listTextAdv.add(text);
+        }
+
+        int priceInt = 0;
+        for (String el : listTextAdv) {
+            priceInt = Integer.parseInt(el.replaceAll("[^0-9]", ""));
+            listPriceInt.add(priceInt);
+        }
+
+        boolean isAscending =true;
+        int currentPrice = 0;
+        for (int i = 0; i < listPriceInt.size(); i++) {
+            if(listPriceInt.get(i) < currentPrice){
+                isAscending = false;
+                currentPrice = listPriceInt.get(i);
+            }
+        }
+        System.out.println(listPriceInt);
+        Assert.assertTrue(isAscending = true);
+
     }
 }
 
+
 //за задача - да се използват няколко динамични модели и марки на коли при теста
+//test za region Sofia - selector za tam deto pishe region v obqvite //td[@style='width:334px;height:50px;padding-left:4px']
+////select[@class='sw300']
