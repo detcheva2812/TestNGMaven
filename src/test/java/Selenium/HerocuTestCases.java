@@ -143,21 +143,47 @@ public class HerocuTestCases {
 
     @Test(invocationCount = 10)
     public void testDisappearingElements() {
+
         driver.get("https://the-internet.herokuapp.com/disappearing_elements");
 
-        By listElementsBy = By.xpath("//ul/li");
-        List<WebElement> listElements = driver.findElements(listElementsBy);
-        int initialSize = listElements.size();
+        By elementsBy = By.xpath("//div[@class='example']//a");
+        List<WebElement> listElements = driver.findElements(elementsBy);
 
-        driver.get(driver.getCurrentUrl());
+        if (listElements.size() == 5) {
+            Assert.assertEquals(listElements.get(0).getText(), "Home");
+            Assert.assertEquals(listElements.get(1).getText(), "About");
+            Assert.assertEquals(listElements.get(2).getText(), "Contact Us");
+            Assert.assertEquals(listElements.get(3).getText(), "Portfolio");
+            Assert.assertEquals(listElements.get(4).getText(), "Gallery");
+        } else {
+            Assert.assertTrue(listElements.size() == 4);
+            Assert.assertEquals(listElements.get(0).getText(), "Home");
+            Assert.assertEquals(listElements.get(1).getText(), "About");
+            Assert.assertEquals(listElements.get(2).getText(), "Contact Us");
+            Assert.assertEquals(listElements.get(3).getText(), "Portfolio");
 
-        listElements = driver.findElements(listElementsBy);
-        int sizeAfterReload = listElements.size();
+            driver.navigate().refresh();
 
-        Assert.assertNotEquals(initialSize, sizeAfterReload);
+            listElements = driver.findElements(elementsBy);
 
-        //Не разбирам закономерността кога изчезва и кога се появява Gallery, за да успея да напиша стабилен тест, изглежда, че не е на всяко лоудване
+            if (listElements.size() == 5) {
+                Assert.assertEquals(listElements.get(0).getText(), "Home");
+                Assert.assertEquals(listElements.get(1).getText(), "About");
+                Assert.assertEquals(listElements.get(2).getText(), "Contact Us");
+                Assert.assertEquals(listElements.get(3).getText(), "Portfolio");
+                Assert.assertEquals(listElements.get(4).getText(), "Gallery");
+            } else {
+                Assert.assertTrue(listElements.size() == 4);
+                Assert.assertEquals(listElements.get(0).getText(), "Home");
+                Assert.assertEquals(listElements.get(1).getText(), "About");
+                Assert.assertEquals(listElements.get(2).getText(), "Contact Us");
+                Assert.assertEquals(listElements.get(3).getText(), "Portfolio");
+            }
+        }
     }
+
+    //Не разбирам закономерността кога изчезва и кога се появява Gallery, за да успея да напиша стабилен тест, изглежда, че не е на всяко лоудване
+
 
     @Test
     public void testChallengingDOM() {
@@ -202,4 +228,5 @@ public class HerocuTestCases {
         Assert.assertTrue(optionTwo.isSelected());
     }
 }
+
 
