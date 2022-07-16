@@ -1,10 +1,7 @@
 package Selenium;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
@@ -15,6 +12,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.testng.Assert;
@@ -22,16 +20,19 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import javax.swing.plaf.metal.MetalScrollButton;
+
 public class HerocuTestCases {
     public WebDriver driver;
     public Actions actions;
     public WebDriverWait wait;
+    public JavascriptExecutor executor;
 
 
     @BeforeMethod
     public void setUp() {
         ChromeOptions options = new ChromeOptions();
-        //options.addArguments("--headless");
+        options.addArguments("--headless");
         options.addArguments("--window-size=1600x900");
         //стандартно се използва 1920x1080
 
@@ -44,11 +45,13 @@ public class HerocuTestCases {
 
         wait = new WebDriverWait(driver, Duration.ofSeconds(15)); //explicit wait
         actions = new Actions(driver); //actions --> няколко actions едно след друго с точки
+        executor = (JavascriptExecutor) driver;
     }
 
     @AfterMethod
     public void tearDown() {
-        driver.close();
+        // driver.close();
+        driver.quit();
         //driver.quit is to quit it as a whole, while driver.close is for the current test
     }
 
@@ -143,6 +146,7 @@ public class HerocuTestCases {
 
     @Test(invocationCount = 10)
     public void testDisappearingElements() {
+        //В тази страница няма закономерност
 
         driver.get("https://the-internet.herokuapp.com/disappearing_elements");
 
@@ -182,7 +186,6 @@ public class HerocuTestCases {
         }
     }
 
-    //Не разбирам закономерността кога изчезва и кога се появява Gallery, за да успея да напиша стабилен тест, изглежда, че не е на всяко лоудване
 
 
     @Test
@@ -226,6 +229,251 @@ public class HerocuTestCases {
 
         WebElement optionTwo = driver.findElement(By.xpath("//option[@value = '2']"));
         Assert.assertTrue(optionTwo.isSelected());
+    }
+
+//    @Test
+//    public void testDynamicContent() {
+//        //unstable because of Herocu bug
+//        driver.get("https://the-internet.herokuapp.com/dynamic_content");
+//
+//        By rowsTextBy = By.cssSelector(".large-10.columns:not(.large-centered)");
+//        By rowsImagesBy = By.cssSelector(".large-2.columns:not(.large-centered)>img");
+//
+//        List<WebElement> listTextElements = driver.findElements(rowsTextBy);
+//        List<WebElement> listImagesElements = driver.findElements(rowsImagesBy);
+//
+//        List<String> listTextsInitial = new ArrayList<>();
+//        List<String> listImagesInitial = new ArrayList<>();
+//
+//        for (WebElement el : listTextElements) {
+//            listTextsInitial.add(el.getText());
+//        }
+//
+//        for (WebElement el : listImagesElements) {
+//            listImagesInitial.add(el.getAttribute("src"));
+//        }
+//
+//        WebElement clickHere = driver.findElement(By.xpath("//a[@href='/dynamic_content?with_content=static']"));
+//
+//        clickHere.click();
+//
+//        listTextElements = driver.findElements(rowsTextBy);
+//        listImagesElements = driver.findElements(rowsImagesBy);
+//
+//        List<String> listTextsAfterClick = new ArrayList<>();
+//        List<String> listImagesAfterClick = new ArrayList<>();
+//
+//        for (WebElement el : listTextElements) {
+//            listTextsAfterClick.add(el.getText());
+//        }
+//
+//        for (WebElement el : listImagesElements) {
+//            listImagesAfterClick.add(el.getAttribute("src"));
+//        }
+//
+//        Assert.assertTrue(listImagesInitial.get(0).equals(listImagesAfterClick.get(0)));
+//        Assert.assertTrue(listImagesInitial.get(1).equals(listImagesAfterClick.get(1)));
+//        Assert.assertFalse(listImagesInitial.get(2).equals(listImagesAfterClick.get(2)));
+//
+//        Assert.assertTrue(listTextsInitial.get(0).equals(listTextsAfterClick.get(0)));
+//        Assert.assertTrue(listTextsInitial.get(1).equals(listTextsAfterClick.get(1)));
+//        Assert.assertFalse(listTextsInitial.get(2).equals(listTextsAfterClick.get(2)));
+//
+//    }
+
+    @Test
+    public void testDynamicControlsRemoveAdd() {
+        driver.get("https://the-internet.herokuapp.com/dynamic_controls");
+
+        By checkBoxBy = By.xpath("//input[@type='checkbox']");
+        By removeBtnBy = By.xpath("//button[text()='Remove']");
+
+        WebElement checkBox = driver.findElement(checkBoxBy);
+        WebElement removeBtn = driver.findElement(removeBtnBy);
+
+        Assert.assertTrue(checkBox.isDisplayed());
+
+        removeBtn.click();
+
+        wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//p[@id='message']"))));
+
+        By addBtnBy = By.xpath("//button[text()= 'Add']");
+        WebElement addBtn = driver.findElement(addBtnBy);
+
+        Assert.assertTrue(addBtn.isDisplayed());
+
+        List<WebElement> checkBoxList = driver.findElements(checkBoxBy);
+
+        Assert.assertTrue(checkBoxList.isEmpty());
+    }
+
+    @Test
+    public void testDynamicControlsEnableDisable() {
+        driver.get("https://the-internet.herokuapp.com/dynamic_controls");
+
+        By inputTxtBy = By.xpath("//input[@type='text']");
+        WebElement inputTxt = driver.findElement(inputTxtBy);
+
+        By enableBtnBy = By.xpath("//button[text()='Enable']");
+        WebElement enableBtn = driver.findElement(enableBtnBy);
+
+        Assert.assertFalse(inputTxt.isEnabled());
+
+        enableBtn.click();
+
+        inputTxt = driver.findElement(inputTxtBy);
+
+        By loadingBy = By.xpath("//div[@id='loading']");
+        WebElement loading = driver.findElement(loadingBy);
+
+        Assert.assertTrue(loading.isDisplayed());
+
+        wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//p[@id='message']"))));
+
+        Assert.assertTrue(inputTxt.isEnabled());
+
+    }
+
+    @Test
+    public void testDynamicLoadingHiddenElement() {
+        driver.get("https://the-internet.herokuapp.com/dynamic_loading/1");
+
+        By startBtnBy = By.xpath("//button");
+        WebElement startBtn = driver.findElement(startBtnBy);
+
+        startBtn.click();
+
+        By loadingBy = By.xpath("//div[@id='loading']");
+        WebElement loading = driver.findElement(loadingBy);
+
+        Assert.assertTrue(loading.isDisplayed());
+
+        wait.until(ExpectedConditions.visibilityOf(driver.findElement(By.xpath("//h4[text()='Hello World!']"))));
+
+        Assert.assertEquals(loading.getAttribute("style"), "display: none;");
+        Assert.assertEquals(driver.findElement(By.xpath("//div[@id='start']")).getAttribute("style"), "display: none;");
+
+    }
+
+    @Test
+    public void testDynamicLoadingElementRenderedAfter() {
+        driver.get("https://the-internet.herokuapp.com/dynamic_loading/2");
+
+        By startBtnBy = By.xpath("//button");
+        WebElement startBtn = driver.findElement(startBtnBy);
+
+
+        By helloWorldBy = By.xpath("//div[@id='finish']");
+        List<WebElement> helloWorldList = driver.findElements(helloWorldBy);
+
+        Assert.assertTrue(helloWorldList.isEmpty());
+
+        startBtn.click();
+
+        By loadingBy = By.xpath("//div[@id='loading']");
+        WebElement loading = driver.findElement(loadingBy);
+
+        wait.until(ExpectedConditions.attributeContains(loading, "style", "display: none;"));
+
+        helloWorldList = driver.findElements(helloWorldBy);
+
+        Assert.assertFalse(helloWorldList.isEmpty());
+    }
+
+    @Test
+    public void testFloatingMenu() {
+        driver.get("https://the-internet.herokuapp.com/floating_menu");
+
+        By menuBy = By.xpath("//div[@id='menu']");
+        Assert.assertTrue(driver.findElement(menuBy).isDisplayed());
+
+        executor.executeScript("window.scrollBy(0, 3000)");//0 - to the right; 3000 px -> scroll down
+        Assert.assertTrue(driver.findElement(menuBy).isDisplayed());
+
+        //actions.sendKeys(Keys.ARROW_DOWN);
+
+        executor.executeScript("window.scrollBy(0, -2000)");//0 - to the right; 3000 px -> scroll down
+        Assert.assertTrue(driver.findElement(menuBy).isDisplayed());
+    }
+
+    @Test
+    public void testHovers() {
+        driver.get("https://the-internet.herokuapp.com/hovers");
+
+        WebElement figure1 = driver.findElement(By.xpath("//div[@class='example']/div[1]"));
+        WebElement figure2 = driver.findElement(By.xpath("//div[@class='example']/div[2]"));
+        WebElement figure3 = driver.findElement(By.xpath("//div[@class='example']/div[3]"));
+
+        WebElement hovered1 = driver.findElement(By.xpath("//a[@href='/users/1']"));
+        WebElement hovered2 = driver.findElement(By.xpath("//a[@href='/users/2']"));
+        WebElement hovered3 = driver.findElement(By.xpath("//a[@href='/users/3']"));
+
+        actions.moveToElement(figure1).perform();
+
+        Assert.assertTrue(hovered1.isDisplayed());
+        Assert.assertFalse(hovered2.isDisplayed());
+        Assert.assertFalse(hovered3.isDisplayed());
+
+        actions.moveToElement(figure2).perform();
+
+        Assert.assertFalse(hovered1.isDisplayed());
+        Assert.assertTrue(hovered2.isDisplayed());
+        Assert.assertFalse(hovered3.isDisplayed());
+
+        actions.moveToElement(figure3).perform();
+
+        Assert.assertFalse(hovered1.isDisplayed());
+        Assert.assertFalse(hovered2.isDisplayed());
+        Assert.assertTrue(hovered3.isDisplayed());
+    }
+
+    @Test
+    public void testMultipleWindows() {
+        driver.get("https://the-internet.herokuapp.com/windows");
+
+        WebElement clickHere = driver.findElement(By.xpath("//a[@href='/windows/new']"));
+
+        String originalWindow = driver.getWindowHandle();
+
+        clickHere.click();
+
+        for (String winHandle : driver.getWindowHandles()) {
+            driver.switchTo().window(winHandle);
+        } //Така суичваме към последния отворен прозорец
+
+        String newWindow = driver.getWindowHandle();
+
+        WebElement newWindowText = driver.findElement(By.xpath("//h3"));
+
+        Assert.assertTrue(newWindowText.isDisplayed());
+        Assert.assertEquals(newWindowText.getText(), "New Window");
+
+        driver.switchTo().window(originalWindow);
+
+        Assert.assertTrue(clickHere.isDisplayed());
+        newWindowText = driver.findElement(By.xpath("//h3"));
+        Assert.assertEquals(newWindowText.getText(), "Opening a new window");
+
+        driver.switchTo().window(newWindow);
+        newWindowText = driver.findElement(By.xpath("//h3"));
+        Assert.assertEquals(newWindowText.getText(), "New Window");
+    }
+
+    @Test
+    public void testRedirectLink() {
+        driver.get("https://the-internet.herokuapp.com/redirector");
+
+        WebElement redirectLink = driver.findElement(By.xpath("//a[@id='redirect']"));
+
+        String originalUrl = driver.getCurrentUrl();
+        Assert.assertEquals(originalUrl, "https://the-internet.herokuapp.com/redirector");
+
+        redirectLink.click();
+
+        String newURL = driver.getCurrentUrl();
+
+        Assert.assertNotEquals(originalUrl, newURL);
+        Assert.assertEquals(newURL, "https://the-internet.herokuapp.com/status_codes");
     }
 }
 
